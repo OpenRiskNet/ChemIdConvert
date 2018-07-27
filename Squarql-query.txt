@@ -1,0 +1,4 @@
+# Get Endpoints:
+PREFIX orn: <http://openrisknet.org/schema/>
+
+SELECT * {?s (orn:Endpoint) ?o}

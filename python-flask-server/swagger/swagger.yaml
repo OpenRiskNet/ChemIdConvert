@@ -1,5 +1,16 @@
----
-swagger: "2.0"
+# ChemIdConvert - Chemical identifier conversion service
+swagger: '2.0'
+'x-orn-@context':
+  '@vocab': 'http://openrisknet.org/schema#'
+  x-orn: 'http://openrisknet.org/schema#'
+  x-orn-@id: '@id'
+  x-orn-@type: '@type'
+  smiles: 'http://semanticscience.org/resource/CHEMINF_000018'
+  inchi: 'http://semanticscience.org/resource/CHEMINF_000113'
+  inchikey: 'http://semanticscience.org/resource/CHEMINF_000059'
+  cas: 'http://semanticscience.org/resource/CHEMINF_000446'
+x-orn-@id: 'https://chemidconvert/v2'
+x-orn-@type: 'x-orn:Service'
 info:
   description: "This REST Api allows you to submit chemical identifiers in one format\
     \ and translate it into another format (e.g. SMILES -> InChi)"
@@ -53,7 +64,6 @@ paths:
         required: true
         type: "string"
         format: "smiles"
-        x-ontology: "http://edamontology.org/format_1196"
       responses:
         200:
           description: "The molecular weight (caluclated with rdkit)"
@@ -67,7 +77,8 @@ paths:
   /smiles/to/inchi:
     get:
       tags:
-      - "SMILES, InChI"
+      - SMILES
+      - InChI
       summary: "Converts from a SMILES format into InChI format"
       description: "Converts from a SMILES format into InChI format. Only a single\
         \ match is returned if there is an ambiguity in the conversion. The conversion\
@@ -80,7 +91,6 @@ paths:
         required: true
         type: "string"
         format: "smiles"
-        x-ontology: "http://edamontology.org/format_1196"
       responses:
         200:
           description: "The converted InChI string"
@@ -99,7 +109,8 @@ paths:
   /inchi/to/smiles:
     get:
       tags:
-      - "SMILES, InChI"
+      - SMILES
+      - InChI
       summary: "Converts from a InChI format into (canonical) SMILES format"
       description: "Converts from InChI format into (canonical) SMILES. Only a single\
         \ match is returned if there is an ambiguity in the conversion. The conversion\
@@ -111,7 +122,6 @@ paths:
         description: "Compound structure notated using InChI notation"
         required: true
         type: "string"
-        x-ontology: "http://edamontology.org/format_1197"
       responses:
         200:
           description: "The converted SMILES string"
@@ -130,7 +140,8 @@ paths:
   /inchi/to/inchikey:
     get:
       tags:
-      - "InChI, InChIKey"
+      - InChI
+      - InChIKey
       summary: "Converts from a InChI format into InChIKey format"
       description: "Converts from InChI format into InChIKey. The conversion is performed\
         \ in process via rdkit.\n"
@@ -141,7 +152,6 @@ paths:
         description: "Compound structure notated using InChI notation"
         required: true
         type: "string"
-        x-ontology: "http://edamontology.org/format_1197"
       responses:
         200:
           description: "The converted InChIKey string"
@@ -160,7 +170,8 @@ paths:
   /inchikey/to/inchi:
     get:
       tags:
-      - "InChI, InChIKey"
+      - InChI
+      - InChIKey
       summary: "Converts from a InChIKey format into InChI format"
       description: "Converts from InChIKey format into InChI. The conversion is performed\
         \ by using an external webservice and has relatively high latency.\n"
@@ -171,7 +182,6 @@ paths:
         description: "Compound structure notated using InChIKey notation"
         required: true
         type: "string"
-        x-ontology: "http://edamontology.org/format_1199"
       responses:
         200:
           description: "The converted InChI string"
@@ -198,7 +208,8 @@ paths:
   /smiles/to/inchikey:
     get:
       tags:
-      - "SMILES, InChIKey"
+      - SMILES
+      - InChIKey
       summary: "Converts from a SMILES format into InChIKey format"
       description: "Converts from SMILES format into InChIKey. The conversion is performed\
         \ in process via rdkit.\n"
@@ -210,7 +221,6 @@ paths:
         required: true
         type: "string"
         format: "smiles"
-        x-ontology: "http://edamontology.org/format_1196"
       responses:
         200:
           description: "The converted InChIKey string"
@@ -229,7 +239,8 @@ paths:
   /inchikey/to/smiles:
     get:
       tags:
-      - "SMILES, InChIKey"
+      - SMILES
+      - InChIKey
       summary: "Converts from a InChIKey format into (canonical) SMILES format"
       description: "Converts from InChIKey format into (canonical) SMILES. The conversion\
         \ is performed by using an external webservice and has relatively high latency.\n"
@@ -240,7 +251,6 @@ paths:
         description: "Compound structure notated using InChIKey notation"
         required: true
         type: "string"
-        x-ontology: "http://edamontology.org/format_1199"
       responses:
         200:
           description: "The converted SMILES string"
@@ -267,7 +277,8 @@ paths:
   /smiles/to/cas:
     get:
       tags:
-      - "SMILES, CAS"
+      - SMILES
+      - CAS
       summary: "Converts from a SMILES format into a CAS number"
       description: "Converts from a SMILES format into a CAS number. Only a single\
         \ match is returned if there is an ambiguity in the conversion. The conversion\
@@ -280,7 +291,6 @@ paths:
         required: true
         type: "string"
         format: "smiles"
-        x-ontology: "http://edamontology.org/format_1196"
       responses:
         200:
           description: "The converted CAS number (3 groups of numbers separated by\
@@ -305,10 +315,139 @@ paths:
           schema:
             $ref: "#/definitions/simpleError"
 
+  /smiles/to/names:
+    get:
+      summary: Converts from a SMILES format to a list of known names
+      operationId: "controllers.default_controller.smiles_to_names_get"
+      description: >
+        Converts from a SMILES format into chemical names. The conversion is
+        performed by using an external webservice and has relatively high latency.
+      tags:
+        - SMILES
+        - NAMES
+      parameters:
+        - $ref: "#/parameters/smiles"
+      responses:
+        200:
+          $ref: "#/responses/names"
+        400:
+          description: Invalid request (typically a mandatory parameter was missing or malformed)
+          schema:
+            $ref: '#/definitions/simpleError'
+        500:
+          description: Error in conversion by external webservice
+          schema:
+            $ref: '#/definitions/simpleError'
+        504:
+          description: Upstream service timeout
+          schema:
+            $ref: '#/definitions/simpleError'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/simpleError'
+
+  /cas/to/names:
+    get:
+      summary: Converts from a CAS number to a list of known names
+      operationId: "controllers.default_controller.cas_to_names_get"
+      description: >
+        Converts from a CAS number into chemical names. The conversion is
+        performed by using an external webservice and has relatively high latency.
+      tags:
+        - CAS
+        - NAMES
+      parameters:
+        - $ref: "#/parameters/cas"
+      responses:
+        200:
+          $ref: "#/responses/names"
+        400:
+          description: Invalid request (typically a mandatory parameter was missing or malformed)
+          schema:
+            $ref: '#/definitions/simpleError'
+        500:
+          description: Error in conversion by external webservice
+          schema:
+            $ref: '#/definitions/simpleError'
+        504:
+          description: Upstream service timeout
+          schema:
+            $ref: '#/definitions/simpleError'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/simpleError'
+
+  /inchi/to/names:
+    get:
+      summary: Converts from a InChI format to a list of known names
+      operationId: "controllers.default_controller.inchi_to_names_get"
+      description: >
+        Converts from a InChI format into chemical names. The conversion is
+        performed by using an external webservice and has relatively high latency.
+      tags:
+        - INCHI
+        - NAMES
+      parameters:
+        - $ref: "#/parameters/inchi"
+      responses:
+        200:
+          $ref: "#/responses/names"
+        400:
+          description: Invalid request (typically a mandatory parameter was missing or malformed)
+          schema:
+            $ref: '#/definitions/simpleError'
+        500:
+          description: Error in conversion by external webservice
+          schema:
+            $ref: '#/definitions/simpleError'
+        504:
+          description: Upstream service timeout
+          schema:
+            $ref: '#/definitions/simpleError'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/simpleError'
+
+  /inchikey/to/names:
+    get:
+      summary: Converts from an InChIKey format to a list of known names
+      operationId: "controllers.default_controller.inchikey_to_names_get"
+      description: >
+        Converts from a InChIKey format into chemical names. The conversion is
+        performed by using an external webservice and has relatively high latency.
+      tags:
+        - INCHIKEY
+        - NAMES
+      parameters:
+        - $ref: "#/parameters/inchikey"
+      responses:
+        200:
+          $ref: "#/responses/names"
+        400:
+          description: Invalid request (typically a mandatory parameter was missing or malformed)
+          schema:
+            $ref: '#/definitions/simpleError'
+        500:
+          description: Error in conversion by external webservice
+          schema:
+            $ref: '#/definitions/simpleError'
+        504:
+          description: Upstream service timeout
+          schema:
+            $ref: '#/definitions/simpleError'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/simpleError'
+
   /cas/to/smiles:
     get:
       tags:
-      - "SMILES, CAS"
+      - SMILES
+      - CAS
       summary: "Converts from a CAS number into (canonical) SMILES format"
       description: "Converts from a CAS number into (canonical) SMILES. Only a single\
         \ match is returned if there is an ambiguity in the conversion. The conversion\
@@ -321,7 +460,6 @@ paths:
           \ separated by dashes)"
         required: true
         type: "string"
-        x-ontology: "http://edamontology.org/data_3102"
       responses:
         200:
           description: "The converted SMILES string"
@@ -348,7 +486,8 @@ paths:
   /inchi/to/cas:
     get:
       tags:
-      - "CAS, InChI"
+      - CAS
+      - InChI
       summary: "Converts from a InChI format into a CAS number"
       description: "Converts from a InChI format into a CAS number. Only a single\
         \ match is returned if there is an ambiguity in the conversion. The conversion\
@@ -360,7 +499,6 @@ paths:
         description: "Compound structure notated using InChI notation"
         required: true
         type: "string"
-        x-ontology: "http://edamontology.org/format_1197"
       responses:
         200:
           description: "The converted CAS number (3 groups of numbers separated by\
@@ -388,7 +526,8 @@ paths:
   /cas/to/inchi:
     get:
       tags:
-      - "CAS, InChI"
+      - CAS
+      - InChI
       summary: "Converts from a CAS number into InChI format"
       description: "Converts from a CAS number into InChI. Only a single match is\
         \ returned if there is an ambiguity in the conversion. The conversion is performed\
@@ -401,7 +540,6 @@ paths:
           \ separated by dashes)"
         required: true
         type: "string"
-        x-ontology: "http://edamontology.org/data_3102"
       responses:
         200:
           description: "The converted InChI string"
@@ -428,7 +566,8 @@ paths:
   /inchikey/to/cas:
     get:
       tags:
-      - "CAS, InChIKey"
+      - CAS
+      - InChIKey
       summary: "Converts from a InChIKey format into a CAS number"
       description: "Converts from a InChIKey format into a CAS number. Only a single\
         \ match is returned if there is an ambiguity in the conversion. The conversion\
@@ -440,7 +579,6 @@ paths:
         description: "Compound structure notated using InChIKey notation"
         required: true
         type: "string"
-        x-ontology: "http://edamontology.org/format_1199"
       responses:
         200:
           description: "The converted CAS number (3 groups of numbers separated by\
@@ -468,7 +606,8 @@ paths:
   /cas/to/inchikey:
     get:
       tags:
-      - "CAS, InChIKey"
+      - CAS
+      - InChIKey
       summary: "Converts from a CAS number into InChIKey format"
       description: "Converts from a CAS number into InChIKey. Only a single match\
         \ is returned if there is an ambiguity in the conversion. The conversion is\
@@ -481,7 +620,6 @@ paths:
           \ separated by dashes)"
         required: true
         type: "string"
-        x-ontology: "http://edamontology.org/data_3102"
       responses:
         200:
           description: "The converted InChIKey string"
@@ -505,6 +643,135 @@ paths:
           schema:
             $ref: "#/definitions/simpleError"
 
+  /name/to/inchikey:
+    get:
+      summary: Converts from a compound name into InChIKey format
+      operationId: "controllers.default_controller.name_to_inchikey_get"
+      description: >
+        Converts from a compound name into InChIKey. Only a single match is
+        returned if there is an ambiguity in the conversion. The conversion is
+        performed by using an external webservice and has relatively high latency.
+      tags:
+        - NAME
+        - InChIKey
+      parameters:
+        - $ref: "#/parameters/name"
+      responses:
+        200:
+          $ref: "#/responses/inchikey"
+        400:
+          description: Invalid request (typically a mandatory parameter was missing or malformed)
+          schema:
+            $ref: '#/definitions/simpleError'
+        500:
+          description: Error in conversion by external webservice
+          schema:
+            $ref: '#/definitions/simpleError'
+        504:
+          description: Upstream service timeout
+          schema:
+            $ref: '#/definitions/simpleError'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/simpleError'
+  /name/to/inchi:
+    get:
+      summary: Converts from a compound name into InChI format
+      operationId: "controllers.default_controller.name_to_inchi_get"
+      description: >
+        Converts from a compound name into InChI. Only a single match is
+        returned if there is an ambiguity in the conversion. The conversion is
+        performed by using an external webservice and has relatively high latency.
+      tags:
+        - NAME
+        - InChI
+      parameters:
+        - $ref: "#/parameters/name"
+      responses:
+        200:
+          $ref: "#/responses/inchi"
+        400:
+          description: Invalid request (typically a mandatory parameter was missing or malformed)
+          schema:
+            $ref: '#/definitions/simpleError'
+        500:
+          description: Error in conversion by external webservice
+          schema:
+            $ref: '#/definitions/simpleError'
+        504:
+          description: Upstream service timeout
+          schema:
+            $ref: '#/definitions/simpleError'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/simpleError'
+  /name/to/smiles:
+    get:
+      summary: Converts from a compound name into Smiles format
+      operationId: "controllers.default_controller.name_to_smiles_get"
+      description: >
+        Converts from a compound name into Smiles. Only a single match is
+        returned if there is an ambiguity in the conversion. The conversion is
+        performed by using an external webservice and has relatively high latency.
+      tags:
+        - NAME
+        - SMILES
+      parameters:
+        - $ref: "#/parameters/name"
+      responses:
+        200:
+          $ref: "#/responses/smiles"
+        400:
+          description: Invalid request (typically a mandatory parameter was missing or malformed)
+          schema:
+            $ref: '#/definitions/simpleError'
+        500:
+          description: Error in conversion by external webservice
+          schema:
+            $ref: '#/definitions/simpleError'
+        504:
+          description: Upstream service timeout
+          schema:
+            $ref: '#/definitions/simpleError'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/simpleError'
+  /name/to/cas:
+    get:
+      summary: Converts from a compound name into CAS number
+      operationId: "controllers.default_controller.name_to_cas_get"
+      description: >
+        Converts from a compound name into CAS number. Only a single match is
+        returned if there is an ambiguity in the conversion. The conversion is
+        performed by using an external webservice and has relatively high latency.
+      tags:
+        - NAME
+        - CAS
+      parameters:
+        - $ref: "#/parameters/name"
+      responses:
+        200:
+          $ref: "#/responses/cas"
+        400:
+          description: Invalid request (typically a mandatory parameter was missing or malformed)
+          schema:
+            $ref: '#/definitions/simpleError'
+        500:
+          description: Error in conversion by external webservice
+          schema:
+            $ref: '#/definitions/simpleError'
+        504:
+          description: Upstream service timeout
+          schema:
+            $ref: '#/definitions/simpleError'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/simpleError'
+
 definitions:
   simpleError:
     type: "string"
@@ -513,7 +780,6 @@ definitions:
       smiles:
         type: "string"
         description: "Compound structure notated using (canonical) SMILES notation"
-        x-ontology: "http://edamontology.org/format_1196"
       molWeight:
         type: "number"
         description: "The molecular weight (caluclated with rdkit)"
@@ -522,25 +788,28 @@ definitions:
       inchi:
         type: "string"
         description: "Compound structure notated using InChI notation"
-        x-ontology: "http://edamontology.org/format_1197"
   inline_response_200_2:
     properties:
       smiles:
         type: "string"
         description: "Compound structure notated using (canonical) SMILES notation"
-        x-ontology: "http://edamontology.org/format_1196"
   inline_response_200_3:
     properties:
       inchikey:
         type: "string"
         description: "Compound structure notated using InChIKey"
-        x-ontology: "http://edamontology.org/format_1199"
   inline_response_200_4:
     properties:
       cas:
         type: "string"
         description: "Compound structure notated using a CAS number"
-        x-ontology: "http://edamontology.org/data_3102"
+  inline_response_200_5:
+    properties:
+      names:
+        type: array
+        items:
+          type: string
+        description: A list of possble names
 parameters:
   smiles:
     name: "smiles"
@@ -549,21 +818,18 @@ parameters:
     required: true
     type: "string"
     format: "smiles"
-    x-ontology: "http://edamontology.org/format_1196"
   inchi:
     name: "inchi"
     in: "query"
     description: "Compound structure notated using InChI notation"
     required: true
     type: "string"
-    x-ontology: "http://edamontology.org/format_1197"
   inchikey:
     name: "inchikey"
     in: "query"
     description: "Compound structure notated using InChIKey notation"
     required: true
     type: "string"
-    x-ontology: "http://edamontology.org/format_1199"
   cas:
     name: "cas"
     in: "query"
@@ -571,7 +837,12 @@ parameters:
       \ separated by dashes)"
     required: true
     type: "string"
-    x-ontology: "http://edamontology.org/data_3102"
+  name:
+    name: name
+    in: query
+    type: string
+    description: Compound structure notated as a CAS number (3 groups of numbers separated by dashes)
+    required: true
 responses:
   inchi:
     description: "The converted InChI string"
@@ -593,3 +864,7 @@ responses:
     description: "The molecular weight (caluclated with rdkit)"
     schema:
       $ref: "#/definitions/inline_response_200"
+  names:
+    description: The converted chemical names (trivial names, synonyms, systematic names, registry numbers, ...)
+    schema:
+      $ref: "#/definitions/inline_response_200_5"

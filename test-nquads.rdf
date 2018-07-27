@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:ns1="http://edamontology.org/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:x-orn="http://openrisknet.org/schema/"
+>
+  <rdf:Description rdf:about="https://chemidconvert/v2">
+    <rdf:type rdf:resource="http://openrisknet.org/schema/Service"/>
+    <x-orn:paths rdf:resource="https://chemidconvert/v2/molWeight"/>
+    <x-orn:paths rdf:resource="https://chemidconvert/v2/smiles/to/inchi"/>
+    <x-orn:info rdf:nodeID="N719e3e92e29244fb9d9039417b492e9b"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N31556e01ae7748099797706dfb227167">
+    <x-orn:OperationParameters rdf:nodeID="N5f6247e701c8478ea3be315751168533"/>
+    <x-orn:OperationResponses rdf:nodeID="N179f95ac0cec46eab18a81e499940b07"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://chemidconvert/v2/smiles/to/inchi">
+    <x-orn:expects rdf:resource="http://openrisknet.org/schema/Compound"/>
+    <x-orn:returns rdf:resource="http://openrisknet.org/schema/Compound"/>
+    <rdf:type rdf:resource="http://openrisknet.org/schema/Conversion"/>
+    <x-orn:Get rdf:nodeID="N3d2f87cf4a4942859ee979e2ef5c3d7d"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Naf9c86bf81494d3ba757ca0fff3081c8">
+    <ns1:media_type rdf:nodeID="Na949d1dae3fd44beb4525b074d73b8b5"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N9266446986234d9fa87815749dd4f263">
+    <x-orn:description>The molecular weight (caluclated with rdkit)</x-orn:description>
+    <x-orn:Content rdf:nodeID="N5324247a30df4801b06f8c47cb664617"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://chemidconvert/v2/molWeight">
+    <x-orn:returns rdf:resource="http://openrisknet.org/schema/molecularMass"/>
+    <x-orn:expects rdf:resource="http://openrisknet.org/schema/Compound"/>
+    <x-orn:Get rdf:nodeID="N31556e01ae7748099797706dfb227167"/>
+    <rdf:type rdf:resource="http://openrisknet.org/schema/Prediction"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Na3019edc74df4be1b85b9dc29d4233da">
+    <x-orn:Properties rdf:nodeID="N61f43d0ea8524bb0a6f76c8cb7cf8b76"/>
+    <rdf:type rdf:resource="http://openrisknet.org/schema/Prediction"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N3d2f87cf4a4942859ee979e2ef5c3d7d">
+    <x-orn:OperationParameters rdf:nodeID="N1bc45a6dd0864da8bf298c477da5912d"/>
+    <x-orn:OperationResponses rdf:nodeID="Na75080f4274745d2831901799a79d5a5"/>
+    <x-orn:description>Converts from a SMILES format into InChI format. Only a single match is returned if there is an ambiguity in the conversion. The conversion is performed in process via rdkit.
+</x-orn:description>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N1bc45a6dd0864da8bf298c477da5912d">
+    <x-orn:description>Compound structure notated using SMILES notation</x-orn:description>
+    <x-orn:Schema rdf:nodeID="N6d8a3960142d415c82ac429766024bea"/>
+    <rdf:type rdf:resource="http://openrisknet.org/schema/Smiles"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N719e3e92e29244fb9d9039417b492e9b">
+    <x-orn:title>ChemIdConvert - Chemical identifier conversion service</x-orn:title>
+    <x-orn:description>This REST Api allows you to submit chemical identifiers in one format and translate it into another format (e.g. SMILES -&gt; InChi)</x-orn:description>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N5f6247e701c8478ea3be315751168533">
+    <x-orn:description>Compound structure notated using SMILES notation</x-orn:description>
+    <rdf:type rdf:resource="http://openrisknet.org/schema/Smiles"/>
+    <x-orn:Schema rdf:nodeID="N8b224073cb28462782a1148a63a43426"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Na949d1dae3fd44beb4525b074d73b8b5">
+    <x-orn:Schema rdf:nodeID="N3d2e623536ef498abcf63c896bc9195a"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N2df7d02d3adc4b3cbca7ceb5e956eec0">
+    <x-orn:description>Compound structure notated using (canonical) SMILES notation</x-orn:description>
+    <rdf:type rdf:resource="http://openrisknet.org/schema/Smiles"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Na75080f4274745d2831901799a79d5a5">
+    <x-orn:StatusCode rdf:nodeID="Nb5e045debff844c5b1b1aa227c5c1145"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N3d2e623536ef498abcf63c896bc9195a">
+    <x-orn:Properties rdf:nodeID="Nc4e9539ba91f4ea1b162fce8555d99e0"/>
+    <rdf:type rdf:resource="http://openrisknet.org/schema/Conversion"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nb5e045debff844c5b1b1aa227c5c1145">
+    <x-orn:Content rdf:nodeID="Naf9c86bf81494d3ba757ca0fff3081c8"/>
+    <x-orn:description>The converted InChI string</x-orn:description>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N179f95ac0cec46eab18a81e499940b07">
+    <x-orn:StatusCode rdf:nodeID="N9266446986234d9fa87815749dd4f263"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N5324247a30df4801b06f8c47cb664617">
+    <ns1:media_type rdf:nodeID="N1f0ee62179524cb99a43226dd422664d"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N61f43d0ea8524bb0a6f76c8cb7cf8b76">
+    <x-orn:Smiles rdf:nodeID="N2df7d02d3adc4b3cbca7ceb5e956eec0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N1f0ee62179524cb99a43226dd422664d">
+    <x-orn:Schema rdf:nodeID="Na3019edc74df4be1b85b9dc29d4233da"/>
+  </rdf:Description>
+</rdf:RDF>

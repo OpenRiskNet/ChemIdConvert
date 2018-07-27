@@ -1,11 +1,15 @@
-FROM informaticsmatters/rdkit:Release_2016_09_2
+FROM continuumio/miniconda3
 MAINTAINER Daniel Bachler <daniel@douglasconnect.com>
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends python-pip && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y libfontconfig1 libxrender1
+
+RUN conda config --add channels rdkit
+RUN conda config --add channels conda-forge
+RUN conda config --add channels mcs07
+RUN conda install -y rdkit
+
 COPY python-flask-server/requirements.txt /python-flask-server/requirements.txt
-RUN pip install -r /python-flask-server/requirements.txt --upgrade
+RUN conda install --yes --file /python-flask-server/requirements.txt
 COPY python-flask-server/ /python-flask-server/
 
 EXPOSE 8080

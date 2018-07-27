@@ -1,0 +1,7 @@
+PREFIX orn: <http://openrisknet.org/schema/>
+
+
+ASK
+WHERE {
+<https://chemidconvert/v2/smiles/to/inchi> (<>|!<>)+ <http://openrisknet.org/schema/Compound> .
+}

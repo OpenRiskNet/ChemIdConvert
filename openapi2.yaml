@@ -1,0 +1,626 @@
+openapi: 3.0.0
+x-orn-@id: 'https://chemidconvert/v2'
+x-orn-@type: 'x-orn:Service'
+servers:
+  - url: 'http://chemidconvert/v1'
+info:
+  title: ChemIdConvert - Chemical identifier conversion service
+  description: >-
+    This REST Api allows you to submit chemical identifiers in one format and
+    translate it into another format (e.g. SMILES -> InChi)
+  version: 1.0.0
+paths:
+  /asSvg:
+    x-orn-@id: "https://chemidconvert/v1/asSvg"
+    get:
+      summary: Returns an svg text of the given molecule
+      parameters:
+        - $ref: '#/components/parameters/smiles'
+        - name: width
+          in: query
+          description: SVG image width
+          required: false
+          schema:
+            type: integer
+            default: 450
+        - name: height
+          in: query
+          description: SVG image height
+          required: false
+          schema:
+            type: integer
+            default: 450
+      responses:
+        '200':
+          description: Successfully created an svg represenatation
+          content:
+            image/svg+xml:
+              schema:
+                type: string
+                description: The text representation of the svg of the molecule
+        default:
+          description: Unexpected error
+          content:
+            image/svg+xml:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+  /molWeight:
+    x-orn-@id: "https://chemidconvert/v1/molWeight"
+    x-orn-@type: "orn:Endpoint"
+    get:
+      summary: Returns the molecular weight (calculated with rdkit)
+      parameters:
+        - $ref: '#/components/parameters/smiles'
+      responses:
+        '200':
+          $ref: '#/components/responses/molWeight'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+  /smiles/to/inchi:
+    x-orn-@id: "https://chemidconvert/v1/smiles/to/inchi"
+    x-orn-@type: "orn:Endpoint"
+    get:
+      summary: Converts from a SMILES format into InChI format
+      description: >
+        Converts from a SMILES format into InChI format. Only a single match is
+        returned if there is an ambiguity in the conversion. The conversion is
+        performed in process via rdkit.
+      tags:
+        - SMILES
+        - InChI
+      parameters:
+        - $ref: '#/components/parameters/smiles'
+      responses:
+        '200':
+          $ref: '#/components/responses/inchi'
+        '400':
+          description: >-
+            Invalid request (typically a mandatory parameter was missing or
+            malformed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+  /inchi/to/smiles:
+    x-orn-@id: "https://chemidconvert/v1/inchi/to/smiles"
+    x-orn-@type: "orn:Endpoint"
+    get:
+      summary: Converts from a InChI format into (canonical) SMILES format
+      description: >
+        Converts from InChI format into (canonical) SMILES. Only a single match
+        is returned if there is an ambiguity in the conversion. The conversion
+        is performed in process via rdkit.
+      tags:
+        - SMILES
+        - InChI
+      parameters:
+        - $ref: '#/components/parameters/inchi'
+      responses:
+        '200':
+          $ref: '#/components/responses/smiles'
+        '400':
+          description: >-
+            Invalid request (typically a mandatory parameter was missing or
+            malformed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+  /inchi/to/inchikey:
+    x-orn-@id: "https://chemidconvert/v1/inchi/to/inchikey"
+    x-orn-@type: "orn:Endpoint"
+    get:
+      summary: Converts from a InChI format into InChIKey format
+      description: >
+        Converts from InChI format into InChIKey. The conversion is performed in
+        process via rdkit.
+      tags:
+        - InChI
+        - InChIKey
+      parameters:
+        - $ref: '#/components/parameters/inchi'
+      responses:
+        '200':
+          $ref: '#/components/responses/inchikey'
+        '400':
+          description: >-
+            Invalid request (typically a mandatory parameter was missing or
+            malformed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+  /inchikey/to/inchi:
+    x-orn-@id: "https://chemidconvert/v1/inchikey/to/inchi"
+    x-orn-@type: "orn:Endpoint"
+    get:
+      summary: Converts from a InChIKey format into InChI format
+      description: >
+        Converts from InChIKey format into InChI. The conversion is performed by
+        using an external webservice and has relatively high latency.
+      tags:
+        - InChI
+        - InChIKey
+      parameters:
+        - $ref: '#/components/parameters/inchikey'
+      responses:
+        '200':
+          $ref: '#/components/responses/inchi'
+        '400':
+          description: >-
+            Invalid request (typically a mandatory parameter was missing or
+            malformed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        '500':
+          description: Error in conversion by external webservice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        '504':
+          description: Upstream service timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+  /smiles/to/inchikey:
+    x-orn-@id: "https://chemidconvert/v1/smiles/to/inchikey"
+    x-orn-@type: "orn:Endpoint"
+    get:
+      summary: Converts from a SMILES format into InChIKey format
+      description: >
+        Converts from SMILES format into InChIKey. The conversion is performed
+        in process via rdkit.
+      tags:
+        - SMILES
+        - InChIKey
+      parameters:
+        - $ref: '#/components/parameters/smiles'
+      responses:
+        '200':
+          $ref: '#/components/responses/inchikey'
+        '400':
+          description: >-
+            Invalid request (typically a mandatory parameter was missing or
+            malformed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+  /inchikey/to/smiles:
+    x-orn-@id: "https://chemidconvert/v1/inchikey/to/smiles"
+    x-orn-@type: "orn:Endpoint"
+    get:
+      summary: Converts from a InChIKey format into (canonical) SMILES format
+      description: >
+        Converts from InChIKey format into (canonical) SMILES. The conversion is
+        performed by using an external webservice and has relatively high
+        latency.
+      tags:
+        - SMILES
+        - InChIKey
+      parameters:
+        - $ref: '#/components/parameters/inchikey'
+      responses:
+        '200':
+          $ref: '#/components/responses/smiles'
+        '400':
+          description: >-
+            Invalid request (typically a mandatory parameter was missing or
+            malformed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        '500':
+          description: Error in conversion by external webservice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        '504':
+          description: Upstream service timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+  /smiles/to/cas:
+    x-orn-@id: "https://chemidconvert/v1/smiles/to/cas"
+    x-orn-@type: "orn:Endpoint"
+    get:
+      summary: Converts from a SMILES format into a CAS number
+      description: >
+        Converts from a SMILES format into a CAS number. Only a single match is
+        returned if there is an ambiguity in the conversion. The conversion is
+        performed by using an external webservice and has relatively high
+        latency.
+      tags:
+        - SMILES
+        - CAS
+      parameters:
+        - $ref: '#/components/parameters/smiles'
+      responses:
+        '200':
+          $ref: '#/components/responses/cas'
+        '400':
+          description: >-
+            Invalid request (typically a mandatory parameter was missing or
+            malformed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        '500':
+          description: Error in conversion by external webservice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        '504':
+          description: Upstream service timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+  /cas/to/smiles:
+    x-orn-@id: "https://chemidconvert/v1/cas/to/smiles"
+    x-orn-@type: "orn:Endpoint"
+    get:
+      summary: Converts from a CAS number into (canonical) SMILES format
+      description: >
+        Converts from a CAS number into (canonical) SMILES. Only a single match
+        is returned if there is an ambiguity in the conversion. The conversion
+        is performed by using an external webservice and has relatively high
+        latency.
+      tags:
+        - SMILES
+        - CAS
+      parameters:
+        - $ref: '#/components/parameters/cas'
+      responses:
+        '200':
+          $ref: '#/components/responses/smiles'
+        '400':
+          description: >-
+            Invalid request (typically a mandatory parameter was missing or
+            malformed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        '500':
+          description: Error in conversion by external webservice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        '504':
+          description: Upstream service timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+  /inchi/to/cas:
+    x-orn-@id: "https://chemidconvert/v1/inchi/to/cas"
+    x-orn-@type: "orn:Endpoint"
+    get:
+      summary: Converts from a InChI format into a CAS number
+      description: >
+        Converts from a InChI format into a CAS number. Only a single match is
+        returned if there is an ambiguity in the conversion. The conversion is
+        performed by using an external webservice and has relatively high
+        latency.
+      tags:
+        - CAS
+        - InChI
+      parameters:
+        - $ref: '#/components/parameters/inchi'
+      responses:
+        '200':
+          $ref: '#/components/responses/cas'
+        '400':
+          description: >-
+            Invalid request (typically a mandatory parameter was missing or
+            malformed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        '500':
+          description: Error in conversion by external webservice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        '504':
+          description: Upstream service timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+  /cas/to/inchi:
+    x-orn-@id: "https://chemidconvert/v1/cas/to/inchi"
+    x-orn-@type: "orn:Endpoint"
+    get:
+      summary: Converts from a CAS number into InChI format
+      description: >
+        Converts from a CAS number into InChI. Only a single match is returned
+        if there is an ambiguity in the conversion. The conversion is performed
+        by using an external webservice and has relatively high latency.
+      tags:
+        - CAS
+        - InChI
+      parameters:
+        - $ref: '#/components/parameters/cas'
+      responses:
+        '200':
+          $ref: '#/components/responses/inchi'
+        '400':
+          description: >-
+            Invalid request (typically a mandatory parameter was missing or
+            malformed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        '500':
+          description: Error in conversion by external webservice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        '504':
+          description: Upstream service timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+  /inchikey/to/cas:
+    x-orn-@id: "https://chemidconvert/v1/inchikey/to/cas"
+    x-orn-@type: "orn:Endpoint"
+    get:
+      summary: Converts from a InChIKey format into a CAS number
+      description: >
+        Converts from a InChIKey format into a CAS number. Only a single match
+        is returned if there is an ambiguity in the conversion. The conversion
+        is performed by using an external webservice and has relatively high
+        latency.
+      tags:
+        - CAS
+        - InChIKey
+      parameters:
+        - $ref: '#/components/parameters/inchikey'
+      responses:
+        '200':
+          $ref: '#/components/responses/cas'
+        '400':
+          description: >-
+            Invalid request (typically a mandatory parameter was missing or
+            malformed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        '500':
+          description: Error in conversion by external webservice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        '504':
+          description: Upstream service timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+  /cas/to/inchikey:
+    x-orn-@id: "https://chemidconvert/v1/cas/to/inchikey"
+    x-orn-@type: "orn:Endpoint"
+    get:
+      summary: Converts from a CAS number into InChIKey format
+      description: >
+        Converts from a CAS number into InChIKey. Only a single match is
+        returned if there is an ambiguity in the conversion. The conversion is
+        performed by using an external webservice and has relatively high
+        latency.
+      tags:
+        - CAS
+        - InChIKey
+      parameters:
+        - $ref: '#/components/parameters/cas'
+      responses:
+        '200':
+          $ref: '#/components/responses/inchikey'
+        '400':
+          description: >-
+            Invalid request (typically a mandatory parameter was missing or
+            malformed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        '500':
+          description: Error in conversion by external webservice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        '504':
+          description: Upstream service timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/simpleError'
+components:
+  parameters:
+    smiles:
+      x-orn-@type: "http://semanticscience.org/resource/CHEMINF_000018"
+      name: smiles
+      in: query
+      description: Compound structure notated using SMILES notation
+      required: true
+      schema:
+        type: string
+        format: smiles
+    inchi:
+      x-orn-@type: "http://semanticscience.org/resource/CHEMINF_000113"
+      name: inchi
+      in: query
+      description: Compound structure notated using InChI notation
+      required: true
+      schema:
+        type: string
+    inchikey:
+      x-orn-@type: "http://semanticscience.org/resource/CHEMINF_000059"
+      name: inchikey
+      in: query
+      description: Compound structure notated using InChIKey notation
+      required: true
+      schema:
+        type: string
+    cas:
+      x-orn-@type: "http://semanticscience.org/resource/CHEMINF_000446"
+      name: cas
+      in: query
+      description: >-
+        Compound structure notated as a CAS number (3 groups of numbers
+        separated by dashes)
+      required: true
+      schema:
+        type: string
+  responses:
+    inchi:
+      description: The converted InChI string
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              inchi:
+                type: string
+                description: Compound structure notated using InChI notation
+    smiles:
+      description: The converted SMILES string
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              smiles:
+                type: string
+                description: Compound structure notated using (canonical) SMILES notation
+    inchikey:
+      description: The converted InChIKey string
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              inchikey:
+                type: string
+                description: Compound structure notated using InChIKey
+    cas:
+      description: The converted CAS number (3 groups of numbers separated by dashes)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              cas:
+                type: string
+                description: Compound structure notated using a CAS number
+    molWeight:
+      description: The molecular weight (caluclated with rdkit)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              smiles:
+                type: string
+                description: Compound structure notated using (canonical) SMILES notation
+              molWeight:
+                type: number
+                description: The molecular weight (caluclated with rdkit)
+  schemas:
+    simpleError:
+      type: string

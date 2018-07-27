@@ -1,0 +1,173 @@
+{ "@context": {
+  "x-orn": "http://openrisknet.org/schema/",
+    "x-orn-@id": "@id",
+    "x-orn-@type":"@type",
+    "title": "x-orn:title",
+    "info": "x-orn:info",
+    "paths":
+      { "@id": "x-orn:paths",
+        "@container": "@index"
+       },
+    "description": "x-orn:description",
+    "get": "x-orn:Get",
+    "smiles": "x-orn:Smiles",
+    "parameters": "x-orn:OperationParameters",
+    "responses":
+      {"@id": "x-orn:OperationResponses",
+                "@container": "@index"
+      },
+    "properties": "x-orn:Properties",
+    "content":
+      {"@id": "x-orn:Content",
+       "@container": "@index"
+      },
+    "schema": "x-orn:Schema"
+  },
+  "openapi": "3.0.0",
+  "x-orn-@id": "https://chemidconvert/v2",
+  "x-orn-@type": "x-orn:Service",
+  "servers": [
+    {
+      "url": "https://chemidconvert/v2"
+    }
+  ],
+  "info": {
+    "title": "ChemIdConvert - Chemical identifier conversion service",
+    "description": "This REST Api allows you to submit chemical identifiers in one format and translate it into another format (e.g. SMILES -> InChi)",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/molWeight": {
+      "x-orn-@id": "https://chemidconvert/v2/molWeight",
+      "x-orn-@type": "x-orn:Prediction",
+      "x-orn:expects": {
+        "x-orn-@id": "x-orn:Compound"
+      },
+      "x-orn:returns": {
+        "x-orn-@id": "x-orn:molecularMass"
+      },
+      "get": {
+        "summary": "Returns the molecular weight (calculated with rdkit)",
+        "parameters": [
+          {
+            "name": "smiles",
+            "x-orn-@type": "x-orn:Smiles",
+            "in": "query",
+            "description": "Compound structure notated using SMILES notation",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The molecular weight (caluclated with rdkit)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "x-orn-@context": "https://chemidconvert/v2/context.json",
+                  "x-orn-@type": "x-orn:Prediction",
+                  "properties": {
+                    "smiles": {
+                      "x-orn-@type": "x-orn:Smiles",
+                      "type": "string",
+                      "description": "Compound structure notated using (canonical) SMILES notation"
+                    },
+                    "molWeight": {
+                      "x-orn-@type": "x-orn:Prediction",
+                      "type": "number",
+                      "description": "The molecular weight (caluclated with rdkit)"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/smiles/to/inchi": {
+      "x-orn-@id": "https://chemidconvert/v2/smiles/to/inchi",
+      "x-orn-@type": "x-orn:Conversion",
+      "x-orn:expects": {
+        "x-orn-@id": "x-orn:Compound"
+      },
+      "x-orn:returns": {
+        "x-orn-@id": "x-orn:Compound"
+      },
+      "get": {
+        "summary": "Converts from a SMILES format into InChI format",
+        "description": "Converts from a SMILES format into InChI format. Only a single match is returned if there is an ambiguity in the conversion. The conversion is performed in process via rdkit.\n",
+        "tags": [
+          "SMILES, InChI"
+        ],
+        "parameters": [
+          {
+            "name": "smiles",
+            "in": "query",
+            "description": "Compound structure notated using SMILES notation",
+            "required": true,
+            "x-orn-@type": "x-orn:Smiles",
+            "schema": {
+              "type": "string",
+              "format": "smiles"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The converted InChI string",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "x-orn-@context": "https://chemidconvert/v2/context.json",
+                  "x-orn-@type": "x-orn:Conversion",
+                  "type": "object",
+                  "properties": {
+                    "inchi": {
+                      "x-orn-@type": "x-orn:Inchi",
+                      "type": "string",
+                      "description": "Compound structure notated using InChI notation"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request (typically a mandatory parameter was missing or malformed)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

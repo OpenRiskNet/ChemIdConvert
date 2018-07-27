@@ -1,0 +1,31 @@
+{ "@context": {
+    "x-orn": "http://openrisknet.org/schema/",
+    "x-orn-@id": "@id",
+    "x-orn-@type":"@type",
+    "title": "x-orn:title",
+    "info": "x-orn:info",
+    "paths":
+      { "@id": "x-orn:paths",
+        "@container": "@index"
+       },
+    "description": "x-orn:description",
+    "get": "x-orn:Get",
+    "parameters": "x-orn:OperationParameters",
+    "responses":
+      {"@id": "x-orn:OperationResponses",
+                "@container": "@index"
+      },
+    "properties": "x-orn:Properties",
+    "content":
+      {"@id": "x-orn:Content",
+       "@container": "@index"
+      },
+    "schema": "x-orn:Schema",
+
+
+    "smiles": "x-orn:Smiles",
+    "inchi": "x-orn:Inchi",
+    "inchikey": "x-orn:InchiKey",
+    "casNumber": "x-orn:CasNumber"
+  },
+}

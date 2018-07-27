@@ -1,0 +1,31 @@
+{ "x-orn": "http://openrisknet.org/schema/",
+  "x-orn-@id": "@id",
+  "x-orn-@type":"@type",
+  "title": "x-orn:title",
+  "info": "x-orn:info",
+  "paths":
+    { "@id": "x-orn:paths",
+      "@container": "@id"
+     },
+  "description": "x-orn:description",
+  "get": "x-orn:Get",
+  "post": "x-orn:Post",
+  "put": "x-orn:Put",
+  "patch": "x-orn:Patch",
+  "delete": "x-orn:Delete",
+  "parameters": "x-orn:OperationParameters",
+  "responses":
+    {"@id": "x-orn:OperationResponses",
+              "@container": "@index"
+    },
+  "schema": "x-orn:Schema",
+  "properties": "x-orn:Properties",
+  "content": "x-orn:Content",
+  "application/json": "x-orn:application/json",
+  "image/svg+xml": "x-orn:image/svg+xml",
+  "smiles": "http://semanticscience.org/resource/CHEMINF_000018",
+  "inchi": "http://semanticscience.org/resource/CHEMINF_000113",
+  "inchikey": "http://semanticscience.org/resource/CHEMINF_000059",
+  "cas": "http://semanticscience.org/resource/CHEMINF_000446",
+  "molWeight": "http://semanticscience.org/resource/CHEMINF_000216"
+}

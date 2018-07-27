@@ -1,7 +1,7 @@
 from rdkit import Chem
 import rdkit.Chem.inchi
 from rdkit.Chem.Descriptors import MolWt
-from urllib2 import HTTPError
+from urllib.error import HTTPError
 import cirpy
 import re
 from werkzeug.contrib.cache import SimpleCache
@@ -11,25 +11,43 @@ from rdkit.Chem.Draw import rdMolDraw2D
 cas_to_inchi_cache = SimpleCache()
 cas_to_inchikey_cache = SimpleCache()
 cas_to_smiles_cache = SimpleCache()
+cas_to_names_cache = SimpleCache()
 inchi_to_cas_cache = SimpleCache()
+inchi_to_names_cache = SimpleCache()
 inchikey_to_cas_cache = SimpleCache()
 inchikey_to_smiles_cache = SimpleCache()
 inchikey_to_inchi_cache = SimpleCache()
+inchikey_to_names_cache = SimpleCache()
 smiles_to_cas_cache = SimpleCache()
+smiles_to_names_cache = SimpleCache()
+name_to_inchi_cache = SimpleCache()
+name_to_inchikey_cache = SimpleCache()
+name_to_smiles_cache = SimpleCache()
+name_to_cas_cache = SimpleCache()
+
 
 caches = {}
 caches['cas'] = {}
 caches['cas']['smiles'] = cas_to_smiles_cache
 caches['cas']['stdinchi'] = cas_to_inchi_cache
 caches['cas']['stdinchikey'] = cas_to_inchikey_cache
+caches['cas']['names'] = cas_to_names_cache
 caches['stdinchi'] = {}
 caches['stdinchi']['cas'] = inchi_to_cas_cache
+caches['stdinchi']['names'] = inchi_to_names_cache
 caches['stdinchikey'] = {}
 caches['stdinchikey']['cas'] = inchikey_to_cas_cache
 caches['stdinchikey']['stdinchi'] = inchikey_to_inchi_cache
 caches['stdinchikey']['smiles'] = inchikey_to_smiles_cache
+caches['stdinchikey']['names'] = inchikey_to_names_cache
 caches['smiles'] = {}
 caches['smiles']['cas'] = smiles_to_cas_cache
+caches['smiles']['names'] = smiles_to_names_cache
+caches['name'] = {}
+caches['name']['smiles'] = name_to_smiles_cache
+caches['name']['stdinchi'] = name_to_inchi_cache
+caches['name']['stdinchikey'] = name_to_inchikey_cache
+caches['name']['cas'] = name_to_cas_cache
 
 
 # In-Process conversions using rdkit:
@@ -112,7 +130,8 @@ def resolve_via_cirpy(identifier, target, source):
         converted = caches[source][target].get(identifier)
         if converted is None:
             sourcehint = 'cas_number' if source == 'cas' else source
-            converted = cirpy.resolve(identifier, target, [sourcehint])
+            sourcehints = ['name_by_opsin', 'name_by_cir'] if sourcehint == 'name' else [sourcehint]
+            converted = cirpy.resolve(identifier, target, sourcehints)
             caches[source][target].set(identifier, converted)
         return converted
     except HTTPError as err:
@@ -129,10 +148,27 @@ def inchikey_to_inchi_get(inchikey):
         return (err.message, err.code)
 
 
+def inchikey_to_names_get(inchikey):
+    try:
+        names = resolve_via_cirpy(inchikey, 'names', 'stdinchikey')
+        return {"names": names}
+    except CirpyError as err:
+        return (err.message, err.code)
+
+
+
 def inchi_to_cas_get(inchi):
     try:
         cas = resolve_via_cirpy(inchi, 'cas', 'stdinchi')
         return {"cas": cas}
+    except CirpyError as err:
+        return (err.message, err.code)
+
+
+def inchi_to_names_get(inchi):
+    try:
+        names = resolve_via_cirpy(inchi, 'names', 'stdinchi')
+        return {"names": names}
     except CirpyError as err:
         return (err.message, err.code)
 
@@ -169,6 +205,14 @@ def cas_to_smiles_get(cas):
         return (err.message, err.code)
 
 
+def cas_to_names_get(cas):
+    try:
+        names = resolve_via_cirpy(cas, 'names', 'cas')
+        return {"names": names}
+    except CirpyError as err:
+        return (err.message, err.code)
+
+
 def smiles_to_cas_get(smiles):
     try:
         cas = resolve_via_cirpy(smiles, 'cas', 'smiles')
@@ -177,10 +221,50 @@ def smiles_to_cas_get(smiles):
         return (err.message, err.code)
 
 
+def smiles_to_names_get(smiles):
+    try:
+        names = resolve_via_cirpy(smiles, 'names', 'smiles')
+        return {"names": names}
+    except CirpyError as err:
+        return (err.message, err.code)
+
+
 def inchikey_to_smiles_get(inchikey):
     try:
         smiles = resolve_via_cirpy(inchikey, 'smiles', 'stdinchikey')
         return {"smiles": smiles}
+    except CirpyError as err:
+        return (err.message, err.code)
+
+
+def name_to_smiles_get(name):
+    try:
+        smiles = resolve_via_cirpy(name, 'smiles', 'name')
+        return {"smiles": smiles}
+    except CirpyError as err:
+        return (err.message, err.code)
+
+
+def name_to_inchi_get(name):
+    try:
+        inchi = resolve_via_cirpy(name, 'stdinchi', 'name')
+        return {"inchi": inchi}
+    except CirpyError as err:
+        return (err.message, err.code)
+
+
+def name_to_inchikey_get(name):
+    try:
+        inchikey = resolve_via_cirpy(name, 'stdinchikey', 'name')
+        return {"inchikey": inchikey}
+    except CirpyError as err:
+        return (err.message, err.code)
+
+
+def name_to_cas_get(name):
+    try:
+        cas = resolve_via_cirpy(name, 'cas', 'name')
+        return {"cas": cas}
     except CirpyError as err:
         return (err.message, err.code)
 
