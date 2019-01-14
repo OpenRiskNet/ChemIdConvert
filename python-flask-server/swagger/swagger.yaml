@@ -16,7 +16,7 @@ info:
     \ and translate it into another format (e.g. SMILES -> InChi)"
   version: "1.0.0"
   title: "ChemIdConvert - Chemical identifier conversion service"
-host: "chemidconvert.cloud.douglasconnect.com"
+host: "orn-chemidconvert-chemidconvert.prod.openrisknet.org"
 basePath: "/v1"
 schemes:
 - "http"
